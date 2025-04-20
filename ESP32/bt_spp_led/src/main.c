@@ -35,6 +35,7 @@
 #define ledB 13 //2
 
 QueueHandle_t msg_queue;
+QueueHandle_t color_queue;
 //#define ledpwm 18
 
 const char *tag = "Bluetooth";
@@ -106,58 +107,86 @@ static void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
         esp_log_buffer_hex("", param->data_ind.data, param->data_ind.len);
         printf("Value received: ");
         char char_num[3];
+        float hsv_color_set[3];
         for (size_t i = 0; i < (param->data_ind.len) - 2; i++)
         {   
             char value = param->data_ind.data[i];
-            //printf("%c", value);
+            printf("%c", value);
 
             if( value == 'X'){
-                
-                char_num[0] = param->data_ind.data[i+1];
-                char_num[1] = param->data_ind.data[i+2];
-                char_num[2] = param->data_ind.data[i+3];
-
-                int num = atoi(char_num); 
-                if(num >= 1 && num <=3) xQueueSend(msg_queue, (void*)&num, pdMS_TO_TICKS(10));
-
-                /*
-                switch (num)
+                if(param->data_ind.data[i+1] == 'C')
                 {
-                case 1 :
-                    //if (GPIO_REG_READ(GPIO_ENABLE_REG) & BIT(ledR)){
-	                //    //pin is output - read the GPIO_OUT_REG register
-	                //    gpio_set_level(ledR, 1-((GPIO_REG_READ(GPIO_OUT_REG)  >> ledR) & 1U));
-                    //} 
-                    ////gpio_set_level(ledR, 1);
-                    //gpio_set_level(ledG, 0);
-                    //gpio_set_level(ledB, 0);
-                    //set_lightmode(0);
+                    char_num[0] = param->data_ind.data[i+2];
+                    char_num[1] = param->data_ind.data[i+3];
+                    char_num[2] = param->data_ind.data[i+4];
 
-                    break;
-                case 2 :
-                    //gpio_set_level(ledR, 0);
-                    //if (GPIO_REG_READ(GPIO_ENABLE_REG) & BIT(ledG)){
-	                //    //pin is output - read the GPIO_OUT_REG register
-	                //    gpio_set_level(ledG, 1-((GPIO_REG_READ(GPIO_OUT_REG)  >> ledG) & 1U));
-                    //}                 
-                    ////gpio_set_level(ledG, 1);
-                    //gpio_set_level(ledB, 0);
-                    //set_lightmode(1);
-                    break;
-                case 3 :
-                    //gpio_set_level(ledR, 0);
-                    //gpio_set_level(ledG, 0);
-                    //if (GPIO_REG_READ(GPIO_ENABLE_REG) & BIT(ledB)){
-	                //    //pin is output - read the GPIO_OUT_REG register
-	                //    gpio_set_level(ledB, 1-((GPIO_REG_READ(GPIO_OUT_REG)  >> ledB) & 1U));
-                    //} 
-                    ////gpio_set_level(ledB, 1);
-                    //set_lightmode(2);
-                    break;
-                default:
-                    break;
+                    hsv_color_set[0] = atoff(char_num);
+
+                    char_num[0] = param->data_ind.data[i+6];
+                    char_num[1] = param->data_ind.data[i+7];
+                    char_num[2] = param->data_ind.data[i+8];
+
+                    hsv_color_set[1] = atoff(char_num)/255.0f;
+
+                    char_num[0] = param->data_ind.data[i+10];
+                    char_num[1] = param->data_ind.data[i+11];
+                    char_num[2] = param->data_ind.data[i+12];
+
+                    hsv_color_set[2] = atoff(char_num)/255.0f;
+
+                    if(hsv_color_set[0] >= 0.0f && hsv_color_set[0] <= 360.0f &&
+                        hsv_color_set[1] >= 0.0f && hsv_color_set[1] <= 1.0f &&
+                        hsv_color_set[2] >= 0.0f && hsv_color_set[2] <= 1.0f
+                    ) {xQueueSend(color_queue, (void*)hsv_color_set, pdMS_TO_TICKS(10));}
                 }
-                */
+                else{
+                    char_num[0] = param->data_ind.data[i+1];
+                    char_num[1] = param->data_ind.data[i+2];
+                    char_num[2] = param->data_ind.data[i+3];
+
+                    int num = atoi(char_num); 
+                    //printf("\nnumber recieved:%d\n", num);
+                    if(num >= 1 && num <=6) xQueueSend(msg_queue, (void*)&num, pdMS_TO_TICKS(10));
+
+                    /*
+                    switch (num)
+                    {
+                    case 1 :
+                        //if (GPIO_REG_READ(GPIO_ENABLE_REG) & BIT(ledR)){
+	                    //    //pin is output - read the GPIO_OUT_REG register
+	                    //    gpio_set_level(ledR, 1-((GPIO_REG_READ(GPIO_OUT_REG)  >> ledR) & 1U));
+                        //} 
+                        ////gpio_set_level(ledR, 1);
+                        //gpio_set_level(ledG, 0);
+                        //gpio_set_level(ledB, 0);
+                        //set_lightmode(0);
+
+                        break;
+                    case 2 :
+                        //gpio_set_level(ledR, 0);
+                        //if (GPIO_REG_READ(GPIO_ENABLE_REG) & BIT(ledG)){
+	                    //    //pin is output - read the GPIO_OUT_REG register
+	                    //    gpio_set_level(ledG, 1-((GPIO_REG_READ(GPIO_OUT_REG)  >> ledG) & 1U));
+                        //}                 
+                        ////gpio_set_level(ledG, 1);
+                        //gpio_set_level(ledB, 0);
+                        //set_lightmode(1);
+                        break;
+                    case 3 :
+                        //gpio_set_level(ledR, 0);
+                        //gpio_set_level(ledG, 0);
+                        //if (GPIO_REG_READ(GPIO_ENABLE_REG) & BIT(ledB)){
+	                    //    //pin is output - read the GPIO_OUT_REG register
+	                    //    gpio_set_level(ledB, 1-((GPIO_REG_READ(GPIO_OUT_REG)  >> ledB) & 1U));
+                        //} 
+                        ////gpio_set_level(ledB, 1);
+                        //set_lightmode(2);
+                        break;
+                    default:
+                        break;
+                    }
+                    */
+                }
             }
         }
         printf("\n");
@@ -340,7 +369,7 @@ void set_led_pwm(void *params)
 
    //initializing pwm for led G
    ledc_timer_config_t timer_config2 = ledc_timer_config_info(LEDC_TIMER_1);
-   ledc_channel_config_t channel_config2 = ledc_channel_config_info(ledR,LEDC_CHANNEL_1,LEDC_TIMER_1);
+   ledc_channel_config_t channel_config2 = ledc_channel_config_info(ledG,LEDC_CHANNEL_1,LEDC_TIMER_1);
    
    ledc_timer_config(&timer_config2);
    ledc_channel_config(&channel_config2);
@@ -350,7 +379,7 @@ void set_led_pwm(void *params)
 
    //initializing pwm for led B
    ledc_timer_config_t timer_config3 = ledc_timer_config_info(LEDC_TIMER_2);
-   ledc_channel_config_t channel_config3 = ledc_channel_config_info(ledR,LEDC_CHANNEL_2,LEDC_TIMER_2);
+   ledc_channel_config_t channel_config3 = ledc_channel_config_info(ledB,LEDC_CHANNEL_2,LEDC_TIMER_2);
    
    ledc_timer_config(&timer_config3);
    ledc_channel_config(&channel_config3);
@@ -359,16 +388,32 @@ void set_led_pwm(void *params)
    ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_2);
 
    float h_rainbow = 0.0f;
+   float s_static = 0.0f;
    float v_wave = 0.0f;
    //uint8_t v_blink = 0; 
    
    uint8_t color[3];
 
+   float hsv_color[3];
+
    float dir = 1.0f;
-   float inc = 0.1f;
+   float inc = 0.05f;
+
+   int ms_counter = 0;
+   int time_limit = 250;
+
+   uint8_t toggle = 0;
 
    while(true){
     xQueueReceive(msg_queue, (void*)&val_mode, 0);
+    if(xQueueReceive(color_queue, (void*)hsv_color, 0) == pdTRUE)
+    {
+        h_rainbow = hsv_color[0];
+        s_static = hsv_color[1];
+        v_wave = hsv_color[2];
+
+        //printf("h:%f, s:%f, v:%f",h_rainbow, s_static,v_wave);
+    }
     switch (val_mode)
     {
     case 1: 
@@ -376,7 +421,7 @@ void set_led_pwm(void *params)
         timer_config1 = ledc_timer_config_info_f(LEDC_TIMER_0,5);
         ledc_timer_config(&timer_config1);
 
-        ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, 255);
+        ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, 127);
         ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0);
 
         ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, 0);
@@ -389,6 +434,53 @@ void set_led_pwm(void *params)
         val_mode = 0;
         break;
     case 2:
+        if(ms_counter >= time_limit)
+        {
+
+            if(timer_config1.freq_hz == 5){
+                timer_config1 = ledc_timer_config_info(LEDC_TIMER_0);
+                ledc_timer_config(&timer_config1);
+            }
+
+            hsv_to_rgb(h_rainbow,s_static,v_wave,color);
+
+            if(toggle == 0) toggle = 1;
+            else toggle = 0;
+
+            ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, toggle*color[0]);
+            ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0);
+    
+            ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, toggle*color[1]);
+            ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1);
+     
+            ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_2, toggle*color[2]);
+            ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_2);
+        }
+
+
+        break;
+    case 3:
+
+        if(timer_config1.freq_hz == 5){
+            timer_config1 = ledc_timer_config_info(LEDC_TIMER_0);
+            ledc_timer_config(&timer_config1);
+        }
+
+        hsv_to_rgb(h_rainbow,s_static,v_wave,color);
+
+        ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, color[0]);
+        ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0);
+
+        ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, color[1]);
+        ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1);
+ 
+        ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_2,color[2]);
+        ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_2);
+        
+        //val_mode = 0;
+
+        break;
+    case 4:
 
         if(timer_config1.freq_hz == 5){
             timer_config1 = ledc_timer_config_info(LEDC_TIMER_0);
@@ -421,7 +513,7 @@ void set_led_pwm(void *params)
         }
 
         break;
-    case 3:
+    case 5:
 
     if(timer_config1.freq_hz == 5){
         timer_config1 = ledc_timer_config_info(LEDC_TIMER_0);
@@ -447,10 +539,27 @@ void set_led_pwm(void *params)
         }
 
         break;
+    
+    case 6:
+
+        ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, 0);
+        ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0);
+
+        ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, 0);
+        ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1);
+
+        ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_2, 0);
+        ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_2);
+
+        val_mode = 0;
+        break;
     }
     //set_lightpwm(val_mode);
-    vTaskDelay(pdMS_TO_TICKS(100));
+    if(ms_counter >= time_limit) ms_counter = 0;
+    ms_counter += 50;
+    vTaskDelay(pdMS_TO_TICKS(50));
    }
+   
 
 }
 
@@ -556,7 +665,8 @@ void app_main(void)
     esp_bt_pin_code_t pin_code;
     esp_bt_gap_set_pin(pin_type, 0, pin_code);
 
-    msg_queue = xQueueCreate(10, sizeof(int)); 
+    msg_queue = xQueueCreate(10, sizeof(int));
+    color_queue = xQueueCreate(10, 3*sizeof(float));  
 
     xTaskCreatePinnedToCore(&set_led_pwm, "task que apled", 2048, NULL, 1, NULL, 1);
 
