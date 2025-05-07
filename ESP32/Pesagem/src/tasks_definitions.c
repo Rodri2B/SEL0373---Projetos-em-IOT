@@ -24,18 +24,18 @@ void servo_actuate(void *params){
     //init pwm
     pwm_motors_init();
 
-    esp_err_t err;
+    //esp_err_t err;
 
-    spi_bus_config_t bus_cfg  = bus_config_info();
-    spi_device_interface_config_t dev_config = dev_config_info();
+    //spi_bus_config_t bus_cfg  = bus_config_info();
+    //spi_device_interface_config_t dev_config = dev_config_info();
 
     //Initialize the SPI bus
-    err = spi_bus_initialize(ESP_SPI_HOST, &bus_cfg, SPI_DMA_CH_AUTO);
-    assert(err == ESP_OK);
+    //err = spi_bus_initialize(ESP_SPI_HOST, &bus_cfg, SPI_DMA_CH_AUTO);
+    //assert(err == ESP_OK);
 
     //add SPI device
-    err = spi_bus_add_device(ESP_SPI_HOST, &dev_config, &spi_handle);
-    assert(err == ESP_OK);
+    //err = spi_bus_add_device(ESP_SPI_HOST, &dev_config, &spi_handle);
+    //assert(err == ESP_OK);
 
     while (true)
     {
