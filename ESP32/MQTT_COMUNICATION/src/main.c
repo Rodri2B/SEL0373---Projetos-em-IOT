@@ -20,22 +20,24 @@
 
 #include "mqtt_client.h" // funcoes para a conexao MQTT
 
-#define  SSID "LabMicros"
-#define  SENHA "seluspeesc@"
-// abc01234edf
+// #define  SSID "LabMicros"
+// #define  SENHA "seluspeesc@"
+#define  SSID "Redmi_Igor"
+#define  SENHA "35516635"
 
 // Defina o endereço do broker MQTT
 #define BROKER_URI "mqtt://igbt.eesc.usp.br"
 
 // Tópico que será utilizado
-#define MQTT_TOPIC "node"
+#define MQTT_TOPIC_PUB "vaquinha/echo"
+#define MQTT_TOPIC_SUB "vaquinha"
 
 // Defina as credenciais (caso necessário)
 #define MQTT_USERNAME "mqtt"
 #define MQTT_PASSWORD "mqtt_123_abc"
 
 // Defina um identificador para o cliente
-static const char *TAG1 = "wifi";
+static const char *TAG1 = "WIFI";
 static const char *TAG = "MQTT";
 
 static void log_error_if_nonzero(const char *message, int error_code)
@@ -114,17 +116,14 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
     switch ((esp_mqtt_event_id_t)event_id) {
     case MQTT_EVENT_CONNECTED:
         ESP_LOGI(TAG, "MQTT_EVENT_CONNECTED");
-        msg_id = esp_mqtt_client_publish(client, "/topic/qos1", "data_3", 0, 1, 0);
-        ESP_LOGI(TAG, "sent publish successful, msg_id=%d", msg_id);
+        // msg_id = esp_mqtt_client_publish(client, "/topic/qos1", "data_3", 0, 1, 0);
+        // ESP_LOGI(TAG, "sent publish successful, msg_id=%d", msg_id);
 
-        msg_id = esp_mqtt_client_subscribe(client, "/topic/qos0", 0);
+        msg_id = esp_mqtt_client_subscribe(client, MQTT_TOPIC_SUB, 1); // at most once
         ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
 
-        msg_id = esp_mqtt_client_subscribe(client, "/topic/qos1", 1);
-        ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
-
-        msg_id = esp_mqtt_client_unsubscribe(client, "/topic/qos1");
-        ESP_LOGI(TAG, "sent unsubscribe successful, msg_id=%d", msg_id);
+        // msg_id = esp_mqtt_client_unsubscribe(client, "/topic/qos1");
+        // ESP_LOGI(TAG, "sent unsubscribe successful, msg_id=%d", msg_id);
         break;
     case MQTT_EVENT_DISCONNECTED:
         ESP_LOGI(TAG, "MQTT_EVENT_DISCONNECTED");
@@ -132,8 +131,6 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
 
     case MQTT_EVENT_SUBSCRIBED:
         ESP_LOGI(TAG, "MQTT_EVENT_SUBSCRIBED, msg_id=%d", event->msg_id);
-        msg_id = esp_mqtt_client_publish(client, "/topic/qos0", "data", 0, 0, 0);
-        ESP_LOGI(TAG, "sent publish successful, msg_id=%d", msg_id);
         break;
     case MQTT_EVENT_UNSUBSCRIBED:
         ESP_LOGI(TAG, "MQTT_EVENT_UNSUBSCRIBED, msg_id=%d", event->msg_id);
@@ -145,6 +142,10 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
         ESP_LOGI(TAG, "MQTT_EVENT_DATA");
         printf("TOPIC=%.*s\r\n", event->topic_len, event->topic);
         printf("DATA=%.*s\r\n", event->data_len, event->data);
+        // echo
+        msg_id = esp_mqtt_client_publish(client, MQTT_TOPIC_PUB, event->data, event->data_len, 2, 0);
+        ESP_LOGI(TAG, "sent publish successful, msg_id=%d", msg_id);
+
         break;
     case MQTT_EVENT_ERROR:
         
@@ -160,12 +161,7 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
         break;
     default:
         ESP_LOGI(TAG, "Other event id:%d", event->event_id);
-        
-        break;
-    }
-}
-
-
+        esp_mqtt_client_publish
 // Função principal para inicializar e configurar o cliente MQTT
 void app_main() {
     
@@ -177,8 +173,8 @@ void app_main() {
     }
 
     wifi_connection(); //config do 
-    vTaskDelay(2000 / portTICK_PERIOD_MS); // esperea um pouco ate configurar o wifi
-
+    vTaskDelay(5000 / portTICK_PERIOD_MS); // esperea um pouco ate configurar o wifi
+    printf("PASSOU AQUI 1");
 
     // Configuração do cliente MQTT
     esp_mqtt_client_config_t mqtt_cfg = {
@@ -199,5 +195,6 @@ void app_main() {
     esp_mqtt_client_start(client);
 
     // Publica uma mensagem no tópico 'node' assim que a conexão for estabelecida
-    esp_mqtt_client_publish(client, MQTT_TOPIC, "Mensagem do ESP32!", 0, 1, 0);
+    //esp_mqtt_client_publish(client, MQTT_TOPIC, "Mensagem do ESP32!", 0, 1, 0);
+    printf("PASSOU AQUI 2");
 }
