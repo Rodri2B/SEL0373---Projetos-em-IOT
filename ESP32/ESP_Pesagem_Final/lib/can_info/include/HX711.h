@@ -47,16 +47,16 @@ unsigned long HX711_get_value(char times);
 
 // returns get_value() divided by SCALE, that is the raw value divided by a value obtained via calibration
 // times = how many readings to do
-float HX711_get_units(char times);
+double HX711_get_units(char times);
 
 // set the OFFSET value for tare weight; times = how many times to read the tare value
 void HX711_tare();
 
 // set the SCALE value; this value is used to convert the raw data to "human readable" data (measure units)
-void HX711_set_scale(float scale );
+void HX711_set_scale(double scale );
 
 // get the current SCALE
-float HX711_get_scale();
+double HX711_get_scale();
 
 // set OFFSET, the value that's subtracted from the actual reading (tare weight)
 void HX711_set_offset(unsigned long offset);

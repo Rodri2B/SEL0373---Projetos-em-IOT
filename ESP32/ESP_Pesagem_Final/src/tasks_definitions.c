@@ -1,6 +1,7 @@
 #include "tasks_definitions.h"
 #include "initializers.h"
 #include "pwm.h"
+#include "rfid.h"
 
 spi_device_handle_t spi_handle;
 
@@ -37,15 +38,34 @@ void servo_actuate(void *params){
     //err = spi_bus_add_device(ESP_SPI_HOST, &dev_config, &spi_handle);
     //assert(err == ESP_OK);
 
+    int confirmation;
+
     while (true)
-    {
-        iot_servo_write_angle(LEDC_LOW_SPEED_MODE, SERVO_PWM_CHANNEL, 50+SERVO_OFFSET);
-        vTaskDelay(pdMS_TO_TICKS(1000));
-        iot_servo_write_angle(LEDC_LOW_SPEED_MODE, SERVO_PWM_CHANNEL, 100+SERVO_OFFSET);
-        vTaskDelay(pdMS_TO_TICKS(1000));
-        iot_servo_write_angle(LEDC_LOW_SPEED_MODE, SERVO_PWM_CHANNEL, 170+SERVO_OFFSET);
-        vTaskDelay(pdMS_TO_TICKS(1000));
-        
+    {   
+
+        if(pdTRUE == xQueueReceive(msg_queue_servo, (void*)&confirmation, pdMS_TO_TICKS(50))){
+
+            if(confirmation == 1){
+                ESP_LOGI(TAG_SERVO,"Confirmation: Boi Liberado");
+                ESP_LOGI(TAG_SERVO,"Abrindo Porta");
+                iot_servo_write_angle(LEDC_LOW_SPEED_MODE, SERVO_PWM_CHANNEL, 90.0f+(float)(SERVO_INITIAL_ANGLE+SERVO_OFFSET));
+                vTaskDelay(pdMS_TO_TICKS(1500));
+                ESP_LOGI(TAG_SERVO,"Fechando Porta");
+                iot_servo_write_angle(LEDC_LOW_SPEED_MODE, SERVO_PWM_CHANNEL, (float)(SERVO_INITIAL_ANGLE+SERVO_OFFSET));
+                vTaskDelay(pdMS_TO_TICKS(1000));
+            } else if(confirmation == 0){
+                
+                ESP_LOGI(TAG_SERVO,"Confirmation: Boi Não Liberado");
+                ESP_LOGI(TAG_SERVO,"Mantendo Porta Fechada");
+                iot_servo_write_angle(LEDC_LOW_SPEED_MODE, SERVO_PWM_CHANNEL, (float)(SERVO_INITIAL_ANGLE+SERVO_OFFSET));
+                vTaskDelay(pdMS_TO_TICKS(1000));
+
+            }
+
+            
+        }
+
+        vTaskDelay(pdMS_TO_TICKS(100));
     }
     
 

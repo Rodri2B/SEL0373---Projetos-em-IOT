@@ -19,7 +19,7 @@ spi_device_interface_config_t dev_config_info();
 
 //RFID
 
-rc522_spi_config_t rc522_spi_driver_config_info();
+//rc522_spi_config_t rc522_spi_driver_config_info();
 
 //************************************************************************************************************//
 
