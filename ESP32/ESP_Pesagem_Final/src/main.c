@@ -17,15 +17,15 @@
 
 #define TAG_TWAI "TWAI"
 #define AVG_SAMPLES   10
-#define GPIO_DATA   GPIO_NUM_18
-#define GPIO_SCLK   GPIO_NUM_15
+#define GPIO_DATA   GPIO_NUM_15
+#define GPIO_SCLK   GPIO_NUM_16
 
 
 //unsigned int weight =101;
 
 //static void weight_reading_task(void* arg);
 
-#define TAG_WEIGHT "WHEIGHT_SENSOR"
+#define TAG_WEIGHT "WEIGHT_SENSOR"
 
 static void initialise_weight_sensor(void);
 void send_task(void *arg);
