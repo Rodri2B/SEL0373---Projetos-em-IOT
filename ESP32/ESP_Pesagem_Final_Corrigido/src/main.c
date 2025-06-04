@@ -118,16 +118,6 @@ void app_main() {
     rc522_register_events(scanner, RC522_EVENT_PICC_STATE_CHANGED, on_picc_state_changed_calibration, &calibration_handle);
     rc522_start(scanner);
 
-    //running calibration
-    tag_calibration(id_block,id_block_size, &calibration_handle);
-
-    rc522_pause(scanner);
-    rc522_unregister_events(scanner, RC522_EVENT_PICC_STATE_CHANGED, on_picc_state_changed_calibration);
-    rc522_register_events(scanner, RC522_EVENT_PICC_STATE_CHANGED, on_picc_state_changed, &scanner);
-    rc522_start(scanner);
-
-
-    
     //initializing tasks
     xTaskCreatePinnedToCore(&servo_actuate, "task que inicializa pwm, e faz controle do servo", 2048, NULL, 1, NULL, 1);
     //xTaskCreatePinnedToCore(&core1functions, "task que inicializa o i2c no core 1", 2048, NULL, 1, NULL, 1);
@@ -196,7 +186,7 @@ void send_task(void *arg) {
 
                 //clear rx tx queues
                 twai_clear_transmit_queue();
-                twai_clear_receive_queue();
+                //twai_clear_receive_queue();
 
                 esp_err_t err = twai_transmit(&message, pdMS_TO_TICKS(500));
                 if (err == ESP_OK) {

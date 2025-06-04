@@ -161,9 +161,8 @@ void on_picc_state_changed(void *arg_scanner_addr, esp_event_base_t base, int32_
 
 void on_picc_state_changed_calibration(void *arg_scanner_addr, esp_event_base_t base, int32_t event_id, void *data)
 {
-    
-    rc522_picc_state_changed_event_t *event = (rc522_picc_state_changed_event_t *)(((tag_calib_handle *)data)->scanner);
-    uint32_t id_to_send = ((tag_calib_handle *)data)->id_to_write;
+
+    rc522_picc_state_changed_event_t *event = (rc522_picc_state_changed_event_t *)data;
     rc522_picc_t *picc = event->picc;
 
     if (picc->state != RC522_PICC_STATE_ACTIVE) {
@@ -177,7 +176,7 @@ void on_picc_state_changed_calibration(void *arg_scanner_addr, esp_event_base_t 
         return;
     }
 
-    if (read_write(*((rc522_handle_t*) arg_scanner_addr), picc, id_to_send) == ESP_OK) {
+    if (read_write(*((rc522_handle_t*) arg_scanner_addr), picc, calibration_handle.id_to_write) == ESP_OK) {
         ESP_LOGI(TAG, "Read/Write success");
 
         tag_uid_handle uid_data;

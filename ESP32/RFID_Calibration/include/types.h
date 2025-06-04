@@ -7,27 +7,16 @@
 #include "driver/gpio.h"
 #include "esp_log.h"
 #include "esp_check.h"
-#include "driver/ledc.h"
 #include "freertos/event_groups.h"
-#include "iot_servo.h"
 #include "rc522.h"
 #include "driver/rc522_spi.h"
 #include "picc/rc522_mifare.h"
 #include "driver/spi_master.h"
 #include <string.h>
 #include <math.h>
+#include <inttypes.h>
 //#include "rfid.h"
 //***************************************************************************************//
-
-//not used on te code
-
-//servo pwm constants
-
-#define SERVO_DUTY_PIN 13
-#define SERVO_PWM_TIMER LEDC_TIMER_2//pwm channel for servo
-#define SERVO_PWM_CHANNEL LEDC_CHANNEL_2
-#define SERVO_INITIAL_ANGLE 0.0
-#define SERVO_OFFSET 0.0//-3.5
 
 //SPI constants
 
