@@ -242,7 +242,10 @@ void receive_task(void *arg) {
                              ((uint32_t)message.data[6] << 16) |
                              ((uint32_t)message.data[5] << 8)  |
                              ((uint32_t)message.data[4]);
-        sprintf(buf,"%d,%d",id,weight);
+        sprintf(buf,"{\"identifier\":\"%d\",\"peso\":%d}",id,weight);
+        // snprintf(mensagem, sizeof(mensagem),
+        //      "{\"identifier\":\"%s\",\"peso\":%.2f}",
+        //      identifier, peso);
         int len =  strlen(buf);
         int msg_id = esp_mqtt_client_publish(client, MQTT_TOPIC_PUB, buf, len, 2, 0);
         	ESP_LOGI(TAG,"ID: %d Valor: %d", id, weight);
