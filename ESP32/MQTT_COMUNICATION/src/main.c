@@ -196,5 +196,5 @@ void app_main() {
 
     // Publica uma mensagem no tópico 'node' assim que a conexão for estabelecida
     //esp_mqtt_client_publish(client, MQTT_TOPIC, "Mensagem do ESP32!", 0, 1, 0);
-    printf("PASSOU AQUI 2");
+    // printf("PASSOU AQUI 2");
 }

@@ -16,6 +16,7 @@
 #include "driver/spi_master.h"
 #include <string.h>
 #include <math.h>
+#include <inttypes.h>
 //#include "rfid.h"
 //***************************************************************************************//
 
@@ -31,11 +32,11 @@
 
 //SPI constants
 
-#define PIN_NUM_MISO 25
+#define PIN_NUM_MISO 19
 #define PIN_NUM_MOSI 23
-#define PIN_NUM_CLK  19
+#define PIN_NUM_CLK  18
 #define PIN_NUM_CS  -1 //not used
-#define RC522_SPI_SCANNER_GPIO_SDA_CS 22
+#define RC522_SPI_SCANNER_GPIO_SDA_CS 14
 #define QUEUE_SIZE 3 //not used
 #define SPI_CLK_FREQUENCY 2000000
 

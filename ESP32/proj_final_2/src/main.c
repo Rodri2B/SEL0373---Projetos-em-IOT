@@ -233,20 +233,20 @@ void receive_task(void *arg) {
         twai_message_t message;
         esp_err_t err = twai_receive(&message, pdMS_TO_TICKS(50));
         if (err == ESP_OK) {
-            int id =         ((uint32_t)message.data[7] << 24) |
-                             ((uint32_t)message.data[6] << 16) |
-                             ((uint32_t)message.data[5] << 8)  |
-                             ((uint32_t)message.data[4]);
-
-            int weight =     ((uint32_t)message.data[3] << 24) |
+            int id =         ((uint32_t)message.data[3] << 24) |
                              ((uint32_t)message.data[2] << 16) |
                              ((uint32_t)message.data[1] << 8)  |
                              ((uint32_t)message.data[0]);
+
+            int weight =     ((uint32_t)message.data[7] << 24) |
+                             ((uint32_t)message.data[6] << 16) |
+                             ((uint32_t)message.data[5] << 8)  |
+                             ((uint32_t)message.data[4]);
         sprintf(buf,"%d,%d",id,weight);
         int len =  strlen(buf);
         int msg_id = esp_mqtt_client_publish(client, MQTT_TOPIC_PUB, buf, len, 2, 0);
-        	ESP_LOGI(TAG,"Valor: %d",weight);
-            send_task_confirmacao();
+        	ESP_LOGI(TAG,"ID: %d Valor: %d", id, weight);
+            // send_task_confirmacao();
         
         }
         /*else if (err == ESP_ERR_TIMEOUT) {
@@ -272,7 +272,7 @@ void send_task(int ID, bool flag) {
             .data = {buf[0], buf[1], buf[2], buf[3], flag, 0x00, 0x00, 0x00}  // Data to send
         };
 
-        esp_err_t err = twai_transmit(&message, pdMS_TO_TICKS(50));
+        esp_err_t err = twai_transmit(&message, pdMS_TO_TICKS(1000));
         if (err == ESP_OK) {
             ESP_LOGI(TAG, "Message sent successfully");
         } else {
@@ -283,7 +283,7 @@ void send_task(int ID, bool flag) {
 void app_main() {
     // Configure TWAI driver
     twai_general_config_t g_config = TWAI_GENERAL_CONFIG_DEFAULT(GPIO_NUM_5, GPIO_NUM_4, TWAI_MODE_NORMAL);
-    twai_timing_config_t t_config = TWAI_TIMING_CONFIG_500KBITS();  // Set to 1 Mbps
+    twai_timing_config_t t_config = TWAI_TIMING_CONFIG_250KBITS();  // Set to 1 Mbps
     twai_filter_config_t f_config = TWAI_FILTER_CONFIG_ACCEPT_ALL();  // Accept all messages
 
     // Install TWAI driver

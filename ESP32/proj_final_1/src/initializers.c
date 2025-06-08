@@ -16,21 +16,6 @@ ledc_timer_config_t ledc_timer_config_info(ledc_timer_t timer_id){
 }
 
 
-/*************  ✨ Windsurf Command ⭐  *************/
-/**
- * @brief Configures an LEDC channel with the specified parameters.
- *
- * This function initializes and returns a `ledc_channel_config_t` structure,
- * which configures an LEDC channel for PWM output on the specified GPIO pin.
- *
- * @param pwm_pin The GPIO number to which the PWM signal is output.
- * @param channel The LEDC channel to configure.
- * @param timer_id The LEDC timer to associate with the channel.
- *
- * @return A configured `ledc_channel_config_t` structure.
- */
-
-/*******  7fa007e2-af16-4f12-9cee-a6cee06f7434  *******/
 ledc_channel_config_t ledc_channel_config_info(
     gpio_num_t pwm_pin,
     ledc_channel_t channel,

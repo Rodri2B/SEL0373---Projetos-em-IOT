@@ -12,7 +12,7 @@ static gpio_num_t GPIO_PD_SCK = GPIO_NUM_15;	// Power Down and Serial Clock Inpu
 static gpio_num_t GPIO_DOUT = GPIO_NUM_18;		// Serial Data Output Pin
 static HX711_GAIN GAIN = eGAIN_128;		// amplification factor
 static unsigned long OFFSET = 0;	// used for tare weight
-static float SCALE = 1;	// used to return weight in grams, kg, ounces, whatever
+static float SCALE = 123.33;	// used to return weight in grams, kg, ounces, whatever
 
 void HX711_init(gpio_num_t dout, gpio_num_t pd_sck, HX711_GAIN gain )
 {
