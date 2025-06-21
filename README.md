@@ -17,7 +17,7 @@ O processo ocorre da seguinte forma:
 4. Em seguida, é realizada a **pesagem** utilizando a **célula de carga**, e o valor obtido é convertido digitalmente via o módulo **HX711**.
 5. O valor do peso é então transmitido via **rede CAN** para o outro **ESP32**, que, por sua vez, envia os dados para o servidor via **MQTT**.
 
-O projeto final dessa ESP32 pode ser visualizado em [Projeto 1](proj_final_1).
+O projeto final dessa ESP32 pode ser visualizado em [Projeto 1](ESP32/proj_final_1).
 
 ## ESP32 para Comunicação MQTT
 
@@ -26,7 +26,7 @@ Este **ESP32** é responsável pela comunicação MQTT, e suas principais funç�
 1. Receber os novos IDs permitidos ou negados via **MQTT** e enviá-los para o outro **ESP32** através da **rede CAN**.
 2. Receber os dados de peso de um ID via **rede CAN** e enviá-los para o servidor via **MQTT**.
 
-O projeto final dessa ESP32 pode ser visualizado em [Projeto 2](proj_final_2).
+O projeto final dessa ESP32 pode ser visualizado em [Projeto 2](ESP32/proj_final_2).
 
 ## Repositório do Código Web
 
